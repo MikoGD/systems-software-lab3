@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 
 int find_index(char *, int, char *, int);
 char *get_column(char *, int, int, int);
@@ -19,13 +20,25 @@ int main(int argc, char *argv[])
   {
     list_processes();
   }
-
-  if (argc == 3 && is_strings_equal(argv[1], "search\0") == 1)
+  else if (argc == 3 && is_strings_equal(argv[1], "search\0") == 1)
   {
     FILE *f = popen("ps -ef", "r");
     int pid = get_pid_for_command(f, argv[2]);
     printf("pid: %d\n", pid);
     fclose(f);
+  }
+  else if (argc == 3 && is_strings_equal(argv[1], "kill\0") == 1)
+  {
+    int pid = atoi(argv[2]);
+    int status = kill(pid, SIGKILL);
+    if (status == 0)
+    {
+      printf("Successfully terminated process: %d\n", pid);
+    }
+    else
+    {
+      printf("Failed to terminate process: %d\n", pid);
+    }
   }
 
   return 0;
